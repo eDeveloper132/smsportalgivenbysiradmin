@@ -13,7 +13,7 @@ async function sendVerificationEmail(Email: string , verificationToken: string) 
         return;
     }
 
-    const verificationURL = new URL(`https://smsportalwpcodersforadmin-three.vercel.app/verify-email`);
+    const verificationURL = new URL(`https://smsportalgivenbysiradmin.vercel.app/verify-email`);
     verificationURL.searchParams.append('token', verificationToken);
 
     const mailOptions = {
