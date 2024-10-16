@@ -6,7 +6,7 @@ async function sendVerificationEmail(Email, verificationToken) {
         console.error("No recipient email defined");
         return;
     }
-    const verificationURL = new URL(`https://2de1-203-101-187-89.ngrok-free.app/verify-email`);
+    const verificationURL = new URL(`https://smsportalgivenbysiradmin.vercel.app/verify-email`);
     verificationURL.searchParams.append('token', verificationToken);
     const mailOptions = {
         from: process.env.EMAIL_USER,
