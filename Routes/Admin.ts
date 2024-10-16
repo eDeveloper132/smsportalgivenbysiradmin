@@ -129,7 +129,7 @@ router.get("/userstable", (req: Request, res: Response) => {
 // Fetch Data
 router.get("/usersdata", async (req: Request, res: Response) => {
   const data = {
-    collection: "signhandlers",
+    collection: "signs",
     database: "test",
     dataSource: "SMSCluster",
     filter: {
@@ -190,7 +190,7 @@ router.put(
       console.log("Request Payload:", {
         dataSource: "SMSCluster",
         database: "test",
-        collection: "signhandlers",
+        collection: "signs",
         filter: { _id: { $oid: _id } },
         replacement: updatedDetails,
       });
@@ -254,7 +254,7 @@ router.delete(
         {
           dataSource: "SMSCluster",
           database: "test",
-          collection: "signhandlers",
+          collection: "signs",
           filter: { _id: { $oid: _id } },
         },
         {
@@ -470,8 +470,7 @@ router.get("/user/adduser", (req: Request, res: Response) => {
 
 router.post("/user/adduser", async (req: Request, res: Response) => {
   console.log(req.body);
-  const { Name, Email, Password, Role, Organization, Phone, CountryCode } =
-    req.body;
+  const { Name, Email, Password, Role, Organization, Phone, CountryCode } = req.body;
 
   try {
     // Validate role
@@ -486,6 +485,8 @@ router.post("/user/adduser", async (req: Request, res: Response) => {
 
     const apiUrl =
       "https://ap-southeast-1.aws.data.mongodb-api.com/app/data-mdipydh/endpoint/data/v1/action/insertOne";
+
+    // Common data structure
     const commonData = {
       id: `${Id}`,
       Name: `${Name}`,
@@ -497,15 +498,15 @@ router.post("/user/adduser", async (req: Request, res: Response) => {
       isVerified: true,
     };
 
-    // Function to add user or admin
-    async function addUserOrAdmin() {
+    // Function to add user
+    async function addUser() {
       try {
         const response = await axios.post(
           apiUrl,
           {
             dataSource: "SMSCluster",
             database: "test",
-            collection: "signhandlers",
+            collection: "signs", // Use a separate collection for users
             document: commonData,
           },
           {
@@ -516,23 +517,50 @@ router.post("/user/adduser", async (req: Request, res: Response) => {
           }
         );
 
-        console.log(`${Role} added successfully:`, response.data);
-        return res.status(201).json({ message: `${Role} added successfully` });
+        console.log(`User added successfully:`, response.data);
+        return res.status(201).json({ message: `User added successfully` });
       } catch (error: any) {
-        console.error(
-          `Error adding ${Role.toLowerCase()}:`,
-          error.response ? error.response.data : error.message
-        );
-        return res
-          .status(500)
-          .json({ message: `Failed to add ${Role.toLowerCase()}` });
+        console.error(`Error adding user:`, error.response ? error.response.data : error.message);
+        return res.status(500).json({ message: `Failed to add user` });
       }
     }
 
-    await addUserOrAdmin();
+    // Function to add admin
+    async function addAdmin() {
+      try {
+        const response = await axios.post(
+          apiUrl,
+          {
+            dataSource: "SMSCluster",
+            database: "test",
+            collection: "signhandlers", // Use a separate collection for admins
+            document: commonData,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "api-key": process.env.MongoDB_API_KEY,
+            },
+          }
+        );
+
+        console.log(`Admin added successfully:`, response.data);
+        return res.status(201).json({ message: `Admin added successfully` });
+      } catch (error: any) {
+        console.error(`Error adding admin:`, error.response ? error.response.data : error.message);
+        return res.status(500).json({ message: `Failed to add admin` });
+      }
+    }
+
+    // Call the appropriate function based on the role
+    if (Role === "User") {
+      await addUser();
+    } else if (Role === "Admin") {
+      await addAdmin();
+    }
   } catch (error: any) {
     console.error("Server Error:", error);
-    return res.status(500).json({ message: "Failed to add user" });
+    return res.status(500).json({ message: "Failed to add user/admin" });
   }
 });
 
