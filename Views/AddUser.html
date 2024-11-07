@@ -374,136 +374,149 @@
                         </form>
                         
                         <!-- Toast Container -->
-                        <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 11;"></div>
+                        <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"></div>
+
     
+
                         <script>
-                        document.getElementById('role').addEventListener('change', function() {
-                            var role = this.value;
-                            var organizationField = document.getElementById('organizationField');
-                            var hiddenRole = document.getElementById('hiddenRole');
-                            
-                            if (role === 'Admin') {
+                            // Role selection: Show or hide organization field based on the role
+                            document.getElementById('role').addEventListener('change', function() {
+                              var role = this.value;
+                              var organizationField = document.getElementById('organizationField');
+                              var hiddenRole = document.getElementById('hiddenRole');
+                              
+                              if (role === 'Admin') {
                                 organizationField.style.display = 'none';
                                 hiddenRole.value = 'Admin';
-                            } else if (role === 'User') {
+                              } else if (role === 'User') {
                                 organizationField.style.display = 'block';
                                 hiddenRole.value = 'User';
-                            }
-                        });
-    
-                        function showToast(message, type = 'success') {
-                            const toastContainer = document.getElementById('toastContainer');
-                            const toast = document.createElement('div');
-                            toast.className = `alert alert-${type} alert-dismissible fade show`;
-                            toast.role = 'alert';
-                            toast.innerHTML = `
-                                ${message}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            `;
-                            toastContainer.appendChild(toast);
-    
-                            setTimeout(() => {
-                                toast.classList.remove('show');
-                                toast.addEventListener('transitionend', () => toast.remove());
-                            }, 5000);
-                        }
-    
-                        document.getElementById('RegistrationForm').addEventListener('submit', async function(event) {
-                            event.preventDefault();
-    
-                            // Clear previous error messages
-                            document.querySelectorAll('.invalid-feedback').forEach(element => {
-                                element.style.display = 'none';
+                              }
                             });
-    
-                            let isValid = true;
-    
-                            // Validate name
-                            const name = document.getElementById('floatingInputName').value;
-                            if (!name.trim()) {
-                                showToast('Please enter your name', 'danger');
+                          
+                            // Form submission and validation
+                            document.getElementById('RegistrationForm').addEventListener('submit', async function(event) {
+                              event.preventDefault();
+                          
+                              // Clear previous error messages
+                              document.querySelectorAll('.invalid-feedback').forEach(element => {
+                                element.style.display = 'none';
+                              });
+                          
+                              let isValid = true;
+                          
+                              // Validate name
+                              const name = document.getElementById('floatingInputName').value;
+                              if (!name.trim()) {
+                                showToast('Please enter your name', false);
                                 isValid = false;
-                            }
-    
-                            // Validate email
-                            const email = document.getElementById('floatingInputEmail').value;
-                            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                            if (!emailPattern.test(email)) {
-                                showToast('Please enter a valid email address', 'danger');
+                              }
+                          
+                              // Validate email
+                              const email = document.getElementById('floatingInputEmail').value;
+                              const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                              if (!emailPattern.test(email)) {
+                                showToast('Please enter a valid email address', false);
                                 isValid = false;
-                            }
-    
-                            // Validate password
-                            const password = document.getElementById('floatingPassword').value;
-                            const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-                            if (!passwordPattern.test(password)) {
-                                showToast('Password must be at least 8 characters long and contain a mix of letters and numbers', 'danger');
+                              }
+                          
+                              // Validate password
+                              const password = document.getElementById('floatingPassword').value;
+                              const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+                              if (!passwordPattern.test(password)) {
+                                showToast('Password must be at least 8 characters long and contain a mix of letters and numbers', false);
                                 isValid = false;
-                            }
-    
-                            // Validate confirm password
-                            const confirmPassword = document.getElementById('floatingPassword2').value;
-                            if (password !== confirmPassword) {
-                                showToast('Passwords do not match', 'danger');
+                              }
+                          
+                              // Validate confirm password
+                              const confirmPassword = document.getElementById('floatingPassword2').value;
+                              if (password !== confirmPassword) {
+                                showToast('Passwords do not match', false);
                                 isValid = false;
-                            }
-    
-                            // Validate phone number
-                            const phoneNumber = document.getElementById('phoneNumber').value;
-                            const phonePattern = /^[0-9]{10}$/;
-                            if (!phonePattern.test(phoneNumber)) {
-                                showToast('Please enter a valid phone number', 'danger');
+                              }
+                          
+                              // Validate phone number
+                              const phoneNumber = document.getElementById('phoneNumber').value;
+                              const phonePattern = /^[0-9]{10}$/;
+                              if (!phonePattern.test(phoneNumber)) {
+                                showToast('Please enter a valid phone number', false);
                                 isValid = false;
-                            }
-    
-                            // Validate organization if role is User
-                            if (document.getElementById('role').value === 'User') {
+                              }
+                          
+                              // Validate organization if role is User
+                              if (document.getElementById('role').value === 'User') {
                                 const organization = document.getElementById('floatingInputOrganization').value;
                                 if (!organization.trim()) {
-                                    showToast('Please enter your organization', 'danger');
-                                    isValid = false;
+                                  showToast('Please enter your organization', false);
+                                  isValid = false;
                                 }
-                            }
-    
-                            // Validate terms and conditions checkbox
-                            const terms = document.getElementById('terms').checked;
-                            if (!terms) {
-                                showToast('You must agree to terms & conditions', 'danger');
+                              }
+                          
+                              // Validate terms and conditions checkbox
+                              const terms = document.getElementById('terms').checked;
+                              if (!terms) {
+                                showToast('You must agree to terms & conditions', false);
                                 isValid = false;
-                            }
-    
-                            if (isValid) {
+                              }
+                          
+                              if (isValid) {
                                 const formObject = {
-                                    Name: name,
-                                    Email: email,
-                                    Password: password,
-                                    Phone: phoneNumber,
-                                    CountryCode: document.getElementById('countryCode').value,
-                                    Role: document.getElementById('hiddenRole').value,
-                                    Organization: document.getElementById('floatingInputOrganization').value
+                                  Name: name,
+                                  Email: email,
+                                  Password: password,
+                                  Phone: phoneNumber,
+                                  CountryCode: document.getElementById('countryCode').value,
+                                  Role: document.getElementById('hiddenRole').value,
+                                  Organization: document.getElementById('floatingInputOrganization').value
                                 };
-    
+                          
                                 try {
-                                    const response = await fetch('/admin/user/adduser', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify(formObject)
-                                    });
-    
-                                    if (response.ok) {
-                                        showToast('Registration successful!', 'success');
-                                        // Optionally redirect or reset form
-                                    } else {
-                                        showToast('Registration failed. Please try again.', 'danger');
-                                    }
+                                  const response = await fetch('/admin/user/adduser', {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(formObject)
+                                  });
+                          
+                                  if (response.ok) {
+                                    showToast('Registration successful!', true);
+                                    // Optionally redirect or reset form
+                                  } else {
+                                    showToast('Registration failed. Please try again.', false);
+                                  }
                                 } catch (error) {
-                                    showToast('An error occurred. Please try again.', 'danger');
+                                  showToast('An error occurred. Please try again.', false);
                                 }
+                              }
+                            });
+                          
+                            // Function to show toast notifications
+                            function showToast(message, isSuccess) {
+                              const toastElement = document.createElement('div');
+                              toastElement.className = `toast align-items-center text-white ${isSuccess ? 'bg-success' : 'bg-danger'} border-0`;
+                              toastElement.role = 'alert';
+                              toastElement.innerHTML = `
+                                <div class="d-flex">
+                                  <div class="toast-body">
+                                    ${message}
+                                  </div>
+                                  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                              `;
+                          
+                              // Append the toast to the toast container
+                              document.getElementById('toastContainer').appendChild(toastElement);
+                          
+                              const toast = new bootstrap.Toast(toastElement);
+                              toast.show();
+                          
+                              // Remove the toast after it's hidden to avoid cluttering the DOM
+                              toastElement.addEventListener('hidden.bs.toast', () => {
+                                toastElement.remove();
+                              });
                             }
-                        });
-                        </script>
+                          </script>
                     </div>
                 </div>
             </div>

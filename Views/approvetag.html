@@ -621,7 +621,7 @@ chat
                         <div class="position-relative container-fluid px-0">
                             <div class="row align-items-center position-relative">
                                 <div class="col-md-8 mb-4 mb-lg-0">
-                                    <h3 class="mb-2">Dashboard</h3>
+                                    <h3 class="mb-2">Approval Requests</h3>
 
 
                                 </div>
@@ -685,10 +685,6 @@ chat
                                 <table class="table table-striped table-bordered table-hover" id="data-table">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th class="text-center">PID</th>
-                                            <th class="text-center">Account ID</th>
-                                            <th class="text-center">Workspace ID</th>
-                                            <th class="text-center">User ID Clicksend</th>
                                             <th class="text-center">User ID</th>
                                             <th class="text-center">Alpha Tag</th>
                                             <th class="text-center">Status</th>
@@ -822,10 +818,6 @@ chat
                                 paginatedData.forEach(doc => {
                                     const item = document.createElement('tr');
                                     item.innerHTML = `
-                                        <td>${doc.pid}</td>
-                                        <td>${doc.account_id}</td>
-                                        <td>${doc.workspace_id}</td>
-                                        <td>${doc.user_id_clicksend}</td>
                                         <td>${doc.user_id}</td>
                                         <td>${doc.alpha_tag}</td>
                                         <td>${doc.status}</td>

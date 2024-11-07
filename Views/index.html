@@ -574,17 +574,7 @@ chat
         </div>
 
                     <!--//Page Toolbar//-->
-                    <div class="toolbar pb-4 px-3 px-lg-6 pt-4 bg-body">
-                        <div class="position-relative container-fluid px-0">
-                            <div class="row align-items-center position-relative">
-                                <div class="col-md-8 mb-4 mb-lg-0">
-                                    <h3 class="mb-2">Dashboard</h3>
 
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <!--//Page Toolbar End//-->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                       <div class="modal-dialog">
@@ -638,6 +628,7 @@ chat
                     <!--//Page content//-->
                     <div class="content pt-3 px-3 px-lg-6 d-flex flex-column-fluid">
                       <div class="container-fluid px-0">
+
                         <div class="d-flex">
                         <div class="col-xl-3 col-md-6 mb-3 mb-lg-5">
 
@@ -707,145 +698,184 @@ chat
                             </tbody>
                           </table>
                         </div>
+                        <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"></div>
+
                       </div>
                     </div>
                     <script>
                       document.addEventListener('DOMContentLoaded', () => {
-    // Function to determine the greeting based on the current time
-    function getGreeting() {
-      const now = new Date();
-      const hours = now.getHours();
-      
-      let greeting = 'Good evening'; // Default greeting
-
-      if (hours >= 20 && hours < 6) {
-        greeting = 'Good night';
-      } else if (hours >= 6 && hours < 12) {
-        greeting = 'Good morning';
-      } else if (hours >= 12 && hours < 17) {
-        greeting = 'Good afternoon';
-      } else if (hours >= 17 && hours < 20) {
-        greeting = 'Good evening';
-      }
-
-      return greeting;
-    }
-
-    // Update the greeting in the HTML
-    function updateGreeting() {
-      const greetingElement = document.getElementById('greeting');
-      const userGreetingElement = document.getElementById('userGreeting');
-      
-      const greeting = getGreeting();
-      greetingElement.textContent = greeting;
-
-      // Optionally update user name if needed
-      // userGreetingElement.textContent = 'Noah'; // Or dynamically set this
-    }
-
-    // Call the function to set the greeting when the page loads
-    updateGreeting();
-  });
-                       document.addEventListener('DOMContentLoaded', async () => {
+                    
+                        // Function to determine the greeting based on the current time
+                        function getGreeting() {
+                          const now = new Date();
+                          const hours = now.getHours();
+                          
+                          let greeting = 'Good evening'; // Default greeting
+                    
+                          if (hours >= 20 && hours < 6) {
+                            greeting = 'Good night';
+                          } else if (hours >= 6 && hours < 12) {
+                            greeting = 'Good morning';
+                          } else if (hours >= 12 && hours < 17) {
+                            greeting = 'Good afternoon';
+                          } else if (hours >= 17 && hours < 20) {
+                            greeting = 'Good evening';
+                          }
+                    
+                          return greeting;
+                        }
+                    
+                        // Update the greeting in the HTML
+                        function updateGreeting() {
+                          const greetingElement = document.getElementById('greeting');
+                          const userGreetingElement = document.getElementById('userGreeting');
+                          
+                          const greeting = getGreeting();
+                          greetingElement.textContent = greeting;
+                    
+                          // Optionally update user name if needed
+                          // userGreetingElement.textContent = 'Noah'; // Or dynamically set this
+                    
+                          // Show toast for greeting
+                          showToast(`Greeting updated: ${greeting}`, true);
+                        }
+                    
+                        // Call the function to set the greeting when the page loads
+                        updateGreeting();
+                      });
+                    
+                      document.addEventListener('DOMContentLoaded', async () => {
                         let verifiedUsersCount = 0;
                         let verifiedAdminsCount = 0;
-    try {
-      const response = await fetch('/admin_one', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        // Include any necessary payload if required by your API
-        body: JSON.stringify({})
-      });
-      
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      
-      const data = await response.json();
-      
-      if (data) {
-        document.getElementById('userName').textContent = data.Name;
-        document.getElementById('userFullName').textContent = data.Name;
-        document.getElementById('userGreeting').textContent = data.Name;
-        // Update the avatar if needed
-        // document.getElementById('userAvatar').src = '/path/to/avatar/' + data.Avatar;
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-    try {
-      const response = await fetch('/admin/usersdata');
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      const userData = await response.json();
-
-      // Count verified users
-      verifiedUsersCount = userData.documents.filter(doc => doc.isVerified).length;
-
-      // Display user data and count
-      displayData(userData, 'User');
-      document.getElementById('usercounter').textContent = verifiedUsersCount;
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      toastr.error('Failed to fetch user data.');
-    }
-
-    // Fetch admin data and count verified admins
-    try {
-      const response = await fetch('/admin/admins/data');
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      const adminData = await response.json();
-
-      // Count verified admins
-      verifiedAdminsCount = adminData.documents.filter(doc => doc.isVerified).length;
-
-      // Display admin data and count
-      displayData(adminData, 'Admin');
-      document.getElementById('admincounter').textContent = verifiedAdminsCount;
-    } catch (error) {
-      console.error('Error fetching admin data:', error);
-      toastr.error('Failed to fetch admin data.');
-    }
-
-    // Function to display data in the table
-    function displayData(data, role) {
-      const container = document.getElementById('data-container');
-      data.documents.forEach(doc => {
-        const item = document.createElement('tr');
-        item.className = 'data-item';
-        item.innerHTML = `
-          <td>${doc.id}</td>
-          <td>${doc.Name}</td>
-          <td>${doc.Email}</td>
-          <td>${doc.PhoneNumber}</td>
-          <td>${role}</td>
-          <td>${doc.Organization || 'No'}</td>
-          <td>${doc.isVerified ? 'Yes' : 'No'}</td>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    // Search functionality
-    const searchInput = document.getElementById('search-input');
-    searchInput.addEventListener('keyup', function() {
-      const searchValue = searchInput.value.toLowerCase();
-      const tableRows = document.querySelectorAll('#data-container tr');
-
-      tableRows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        let matchFound = false;
-
-        cells.forEach(cell => {
-          if (cell.textContent.toLowerCase().includes(searchValue)) {
-            matchFound = true;
-          }
-        });
-
-        row.style.display = matchFound ? '' : 'none';
-      });
-    });
-  });                   
-   </script>
+                    
+                        // Fetch user data
+                        try {
+                          const response = await fetch('/admin_one', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({})
+                          });
+                          
+                          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                          
+                          const data = await response.json();
+                          
+                          if (data) {
+                            document.getElementById('userName').textContent = data.Name;
+                            document.getElementById('userFullName').textContent = data.Name;
+                            document.getElementById('userGreeting').textContent = data.Name;
+                    
+                            // Success toast for user data fetch
+                            showToast('User data fetched successfully.', true);
+                          }
+                        } catch (error) {
+                          console.error('Error fetching user data:', error);
+                          showToast('Failed to fetch user data.', false);
+                        }
+                    
+                        // Fetch verified users count
+                        try {
+                          const response = await fetch('/admin/usersdata');
+                          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                          const userData = await response.json();
+                    
+                          verifiedUsersCount = userData.documents.filter(doc => doc.isVerified).length;
+                          displayData(userData, 'User');
+                          document.getElementById('usercounter').textContent = verifiedUsersCount;
+                    
+                          // Success toast for user data fetch
+                          showToast('User data fetched successfully.', true);
+                        } catch (error) {
+                          console.error('Error fetching user data:', error);
+                          showToast('Failed to fetch user data.', false);
+                        }
+                    
+                        // Fetch verified admins count
+                        try {
+                          const response = await fetch('/admin/admins/data');
+                          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                          const adminData = await response.json();
+                    
+                          verifiedAdminsCount = adminData.documents.filter(doc => doc.isVerified).length;
+                          displayData(adminData, 'Admin');
+                          document.getElementById('admincounter').textContent = verifiedAdminsCount;
+                    
+                          // Success toast for admin data fetch
+                          showToast('Admin data fetched successfully.', true);
+                        } catch (error) {
+                          console.error('Error fetching admin data:', error);
+                          showToast('Failed to fetch admin data.', false);
+                        }
+                    
+                        // Function to display data in the table
+                        function displayData(data, role) {
+                          const container = document.getElementById('data-container');
+                          data.documents.forEach(doc => {
+                            const item = document.createElement('tr');
+                            item.className = 'data-item';
+                            item.innerHTML = `
+                              <td>${doc.id}</td>
+                              <td>${doc.Name}</td>
+                              <td>${doc.Email}</td>
+                              <td>${doc.PhoneNumber}</td>
+                              <td>${role}</td>
+                              <td>${doc.Organization || 'No'}</td>
+                              <td>${doc.isVerified ? 'Yes' : 'No'}</td>
+                            `;
+                            container.appendChild(item);
+                          });
+                        }
+                    
+                        // Search functionality
+                        const searchInput = document.getElementById('search-input');
+                        searchInput.addEventListener('keyup', function() {
+                          const searchValue = searchInput.value.toLowerCase();
+                          const tableRows = document.querySelectorAll('#data-container tr');
+                    
+                          tableRows.forEach(row => {
+                            const cells = row.querySelectorAll('td');
+                            let matchFound = false;
+                    
+                            cells.forEach(cell => {
+                              if (cell.textContent.toLowerCase().includes(searchValue)) {
+                                matchFound = true;
+                              }
+                            });
+                    
+                            row.style.display = matchFound ? '' : 'none';
+                          });
+                        });
+                      });
+                    
+                      // Function to show toast notifications
+                      function showToast(message, isSuccess) {
+                        const toastElement = document.createElement('div');
+                        toastElement.className = `toast align-items-center text-white ${isSuccess ? 'bg-success' : 'bg-danger'} border-0`;
+                        toastElement.role = 'alert';
+                        toastElement.innerHTML = `
+                          <div class="d-flex">
+                            <div class="toast-body">
+                              ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                          </div>
+                        `;
+                    
+                        // Append the toast to the toast container
+                        document.getElementById('toastContainer').appendChild(toastElement);
+                    
+                        const toast = new bootstrap.Toast(toastElement);
+                        toast.show();
+                    
+                        // Remove the toast after it's hidden to avoid cluttering the DOM
+                        toastElement.addEventListener('hidden.bs.toast', () => {
+                          toastElement.remove();
+                        });
+                      }
+                    </script>
+                    
                     <!--//Page content End//-->
             <!--//Page-footer//-->
  <footer class="pb-3 pb-lg-5 px-3 px-lg-6">

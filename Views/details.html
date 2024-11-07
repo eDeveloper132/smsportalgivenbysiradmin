@@ -126,12 +126,7 @@
       text-decoration: none;
       cursor: pointer;
     }
-    #toast-container {
-            position: absolute !important;
-            top: 80px; /* Adjust this value based on your toolbar height */
-            right: 0;
-            z-index: 1050; /* Ensure it's above other content */
-        }
+
 </style>
   <head>
     <meta charset="UTF-8">
@@ -646,262 +641,374 @@ chat
             </div>
         </div>
     
-        <!--//Page content//-->
-        <div class="content pt-3 px-3 px-lg-6 d-flex flex-column-fluid">
-            <div class="container-fluid px-0">
-                <div class="row">
-                    <div class="col-12 mb-3 mb-lg-5">
-                        <div class="card">
-                            <div class="table-responsive">
-                                <table id="datatable" class="table mt-0 table-striped table-card table-nowrap">
-                                    <thead class="text-uppercase small text-muted">
-                                        <tr>
-                                            <th>User ID</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>PhoneNumber</th>
-                                            <th>Role</th>
-                                            <th>Organization</th>
-                                            <th>isVerified</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="data-container">
-                                        <!-- Data will be dynamically added here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Modal for Editing -->
-                <div id="editModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editModalLabel">Edit User</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="editForm">
-                                    <input type="hidden" id="editId">
-                                    <div class="form-group">
-                                        <label for="editName">Name:</label>
-                                        <input type="text" class="form-control" id="editName" name="Name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editEmail">Email:</label>
-                                        <input type="email" class="form-control" id="editEmail" name="Email" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editPhoneNumber">Phone Number:</label>
-                                        <input type="text" class="form-control" id="editPhoneNumber" name="PhoneNumber" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="hidden" class="form-control" id="editRole" name="Role" value="User" readonly>
-                                        <input type="hidden" id="editRoleHidden" name="Role" value="User">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editOrganization">Organization:</label>
-                                        <input type="text" class="form-control" id="editOrganization" name="Organization" required>
-                                    </div>
-                                    <button type="button" class="btn btn-primary" id="saveEdit">Save</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!--//Page content//-->      
+<div class="content pt-3 px-3 px-lg-6 d-flex flex-column-fluid">
+  <div class="container-fluid px-0">
+      <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3"></div>
+
+      <div class="row">
+          <div class="col-12 mb-3 mb-lg-5">
+              <div class="card">
+                  <div class="card-body">
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="input-group">
+            <span class="input-group-text bg-primary text-white" id="search-addon">
+                <i class="bi bi-search"></i> <!-- Bootstrap Icons search icon -->
+            </span>
+            <input type="text" id="searchInput" class="form-control border-primary" placeholder="Search by name and email..." aria-label="Search" aria-describedby="search-addon" />
         </div>
-    
-        <!-- Bootstrap JS and dependencies -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
-        <!-- Toastr JS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    
-        <!-- Custom JS -->
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                // Function to determine the greeting based on the current time
-                function getGreeting() {
-                    const now = new Date();
-                    const hours = now.getHours();
-    
-                    let greeting = 'Good evening'; // Default greeting
-    
-                    if (hours >= 20 || hours < 6) {
-                        greeting = 'Good night';
-                    } else if (hours >= 6 && hours < 12) {
-                        greeting = 'Good morning';
-                    } else if (hours >= 12 && hours < 17) {
-                        greeting = 'Good afternoon';
-                    } else if (hours >= 17 && hours < 20) {
-                        greeting = 'Good evening';
-                    }
-    
-                    return greeting;
-                }
-    
-                // Update the greeting in the HTML
-                function updateGreeting() {
-                    const greetingElement = document.getElementById('greeting');
-                    const userGreetingElement = document.getElementById('userGreeting');
-    
-                    const greeting = getGreeting();
-                    greetingElement.textContent = greeting;
-                    // Optionally update user name if needed
-                    // userGreetingElement.textContent = 'Noah'; // Or dynamically set this
-                }
-    
-                // Call the function to set the greeting when the page loads
-                updateGreeting();
-            });
-    
-            document.addEventListener('DOMContentLoaded', async () => {
-                try {
-                    const response = await fetch('/admin_one', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({})
-                    });
-    
-                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-    
-                    const data = await response.json();
-    
-                    if (data) {
-                        document.getElementById('userName').textContent = data.Name;
-                        document.getElementById('userFullName').textContent = data.Name;
-                        document.getElementById('userGreeting').textContent = data.Name;
-                    }
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                    toastr.error('Failed to fetch user data.');
-                }
-            });
-    
-            document.addEventListener('DOMContentLoaded', fetchData);
-    
-            async function fetchData() {
-                try {
-                    const response = await fetch('/admin/usersdata');
-                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                    const data = await response.json();
-                    displayData(data);
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    toastr.error('Failed to fetch data.');
-                }
-            }
-    
-            function displayData(data) {
-                const container = document.getElementById('data-container');
-                container.innerHTML = '';
-    
-                data.documents.forEach(doc => {
-                    const item = document.createElement('tr');
-                    item.className = 'data-item';
-                    item.innerHTML = `
-                        <td>${doc.id}</td>
-                        <td>${doc.Name}</td>
-                        <td>${doc.Email}</td>
-                        <td>${doc.PhoneNumber}</td>
-                        <td>${doc.Role}</td>
-                        <td>${doc.Organization}</td>
-                        <td>${doc.isVerified}</td>
-                        <td>
-                            <button class="edit-btn btn btn-success btn-sm">Edit</button>
-                            <button class="delete-btn btn btn-danger btn-sm">Delete</button>
-                        </td>
-                    `;
-                    item.querySelector('.edit-btn').onclick = () => openEditModal(doc);
-                    item.querySelector('.delete-btn').onclick = () => deleteItem(doc._id);
-    
-                    container.appendChild(item);
-                });
-            }
-    
-            function openEditModal(doc) {
-                document.getElementById('editId').value = doc._id;
-                document.getElementById('editName').value = doc.Name;
-                document.getElementById('editEmail').value = doc.Email;
-                document.getElementById('editPhoneNumber').value = doc.PhoneNumber;
-                document.getElementById('editRole').value = 'User';  // Fixed role
-                document.getElementById('editRoleHidden').value = 'User'; // Ensure it's set
-                document.getElementById('editOrganization').value = doc.Organization;
-    
-                // Open the Bootstrap modal
-                $('#editModal').modal('show');
-            }
-    
-            document.getElementById('saveEdit').addEventListener('click', async () => {
-                const id = document.getElementById('editId').value;
-                const updatedDetails = {
-                    Name: document.getElementById('editName').value,
-                    Email: document.getElementById('editEmail').value,
-                    PhoneNumber: document.getElementById('editPhoneNumber').value,
-                    Role: document.getElementById('editRole').value,
-                    Organization: document.getElementById('editOrganization').value
-                };
-    
-                try {
-                    const response = await fetch('/admin/users/user/edit', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ _id: id, updatedDetails })
-                    });
-    
-                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                    toastr.success('User updated successfully.');
-                    $('#editModal').modal('hide');
-                    fetchData();
-                } catch (error) {
-                    console.error('Error updating user:', error);
-                    toastr.error('Failed to update user.');
-                }
-            });
-    
-            async function deleteItem(id) {
-                if (confirm(`Are you sure you want to delete user with ID: ${id}?`)) {
-                    try {
-                        const response = await fetch('/admin/users/user/delete', {
-                            method: 'DELETE',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ _id: id })
-                        });
-    
-                        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                        toastr.success('User deleted successfully.');
-                        fetchData();
-                    } catch (error) {
-                        console.error('Error deleting user:', error);
-                        toastr.error('Failed to delete user.');
-                    }
-                }
-            }
-    
-            // Customize Toastr options
-            toastr.options = {
-                closeButton: true,
-                debug: false,
-                newestOnTop: false,
-                progressBar: true,
-                positionClass: 'toast-top-right',
-                preventDuplicates: false,
-                onclick: null,
-                showDuration: '300',
-                hideDuration: '1000',
-                timeOut: '5000',
-                extendedTimeOut: '1000',
-                showEasing: 'swing',
-                hideEasing: 'linear',
-                showMethod: 'fadeIn',
-                hideMethod: 'fadeOut'
-            };
-        </script>
+    </div>
+</div>
+
+                      <div class="table-responsive">
+                          <table id="datatable" class="table mt-0 table-striped table-card table-nowrap">
+                              <thead class="text-uppercase small text-muted">
+                                  <tr>
+                                      <th>User ID</th>
+                                      <th>Name</th>
+                                      <th>Email</th>
+                                      <th>Phone Number</th>
+                                      <th>Role</th>
+                                      <th>Organization</th>
+                                      <th>isVerified</th>
+                                      <th>Action</th>
+                                  </tr>
+                              </thead>
+                              <tbody id="data-container">
+                                  <!-- Data will be dynamically added here -->
+                              </tbody>
+                          </table>
+                      </div>
+                      <nav aria-label="Page navigation" class="mt-3">
+                          <ul class="pagination" id="pagination">
+                              <!-- Pagination buttons will be dynamically generated here -->
+                          </ul>
+                      </nav>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Modal for Editing -->
+      <div id="editModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      <form id="editForm">
+                          <input type="hidden" id="editId">
+                          <div class="mb-3">
+                              <label for="editName" class="form-label">Name:</label>
+                              <input type="text" class="form-control" id="editName" name="Name" required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="editEmail" class="form-label">Email:</label>
+                              <input type="email" class="form-control" id="editEmail" name="Email" required>
+                          </div>
+                          <div class="mb-3">
+                              <label for="editPhoneNumber" class="form-label">Phone Number:</label>
+                              <input type="text" class="form-control" id="editPhoneNumber" name="PhoneNumber" required>
+                          </div>
+                          <div class="d-none">
+                              <input type="hidden" class="form-control" id="editRole" name="Role" value="User" readonly>
+                              <input type="hidden" id="editRoleHidden" name="Role" value="User">
+                          </div>
+                          <div class="mb-3">
+                              <label for="editOrganization" class="form-label">Organization:</label>
+                              <input type="text" class="form-control" id="editOrganization" name="Organization" required>
+                          </div>
+                          <button type="button" class="btn btn-primary" id="saveEdit">Save</button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<!-- Custom JS -->
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize global variables
+      let currentPage = 1;
+      const itemsPerPage = 3; // Number of items to display per page
+      let usersData = []; // To store fetched user data
+
+      // Function to determine the greeting based on the current time
+      function getGreeting() {
+          const now = new Date();
+          const hours = now.getHours();
+          let greeting;
+
+          if (hours >= 20 || hours < 6) {
+              greeting = 'Good night';
+          } else if (hours >= 6 && hours < 12) {
+              greeting = 'Good morning';
+          } else if (hours >= 12 && hours < 17) {
+              greeting = 'Good afternoon';
+          } else {
+              greeting = 'Good evening';
+          }
+
+          return greeting;
+      }
+
+      // Update the greeting in the HTML
+      function updateGreeting() {
+          const greetingElement = document.getElementById('greeting');
+          const userGreetingElement = document.getElementById('userGreeting');
+          const greeting = getGreeting();
+          greetingElement.textContent = greeting;
+          userGreetingElement.textContent = greeting;
+      }
+
+      // Call the function to set the greeting when the page loads
+      updateGreeting();
+
+      // Fetch user data and initial data
+      await fetchUserData();
+      await fetchData();
+      setupSearch();
+
+      async function fetchUserData() {
+          try {
+              const response = await fetch('/admin_one', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({})
+              });
+
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+              const data = await response.json();
+
+              if (data) {
+                  document.getElementById('userName').textContent = data.Name;
+                  document.getElementById('userFullName').textContent = data.Name;
+                  document.getElementById('userGreeting').textContent = data.Name;
+                  showToast('User data fetched successfully!', true);
+              }
+          } catch (error) {
+              console.error('Error fetching user data:', error);
+              showToast('Failed to fetch user data.', false);
+          }
+      }
+
+      async function fetchData() {
+          try {
+              const response = await fetch('/admin/usersdata');
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+              const data = await response.json();
+              usersData = data.documents; // Store fetched data
+              displayData(currentPage);
+              showToast('Data loaded successfully!', true);
+              setupPagination(usersData.length);
+          } catch (error) {
+              console.error('Error fetching data:', error);
+              showToast('Failed to fetch data.', false);
+          }
+      }
+
+      function displayData(page) {
+          const container = document.getElementById('data-container');
+          container.innerHTML = '';
+
+          // Calculate start and end indices for slicing the data array
+          const start = (page - 1) * itemsPerPage;
+          const end = start + itemsPerPage;
+          const paginatedItems = usersData.slice(start, end);
+
+          paginatedItems.forEach(doc => {
+              const item = document.createElement('tr');
+              item.className = 'data-item';
+              item.innerHTML = `
+                  <td>${doc.id}</td>
+                  <td>${doc.Name}</td>
+                  <td>${doc.Email}</td>
+                  <td>${doc.PhoneNumber}</td>
+                  <td>${doc.Role}</td>
+                  <td>${doc.Organization}</td>
+                  <td>${doc.isVerified}</td>
+                  <td>
+                      <button class="edit-btn btn btn-success btn-sm">Edit</button>
+                      <button class="delete-btn btn btn-danger btn-sm">Delete</button>
+                  </td>
+              `;
+              item.querySelector('.edit-btn').onclick = () => openEditModal(doc);
+              item.querySelector('.delete-btn').onclick = () => deleteItem(doc._id);
+
+              container.appendChild(item);
+          });
+      }
+
+      function setupPagination(totalItems) {
+          const pagination = document.getElementById('pagination');
+          pagination.innerHTML = ''; // Clear previous pagination
+
+          const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+          for (let i = 1; i <= totalPages; i++) {
+              const pageItem = document.createElement('li');
+              pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+              pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+
+              pageItem.onclick = (e) => {
+                  e.preventDefault();
+                  currentPage = i; // Update current page
+                  displayData(currentPage);
+                  setupPagination(totalItems); // Update pagination state
+              };
+
+              pagination.appendChild(pageItem);
+          }
+      }
+
+      function setupSearch() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        const filteredData = usersData.filter(user =>
+            user.Name.toLowerCase().includes(query) ||
+            user.Email.toLowerCase().includes(query) ||
+            user.PhoneNumber.toLowerCase().includes(query)
+        );
+
+        // Update the displayed data based on filtered results
+        displayFilteredData(filteredData);
+    });
+}
+function displayFilteredData(filteredData) {
+    currentPage = 1; // Reset to the first page
+    setupPagination(filteredData.length); // Update pagination based on filtered data
+    const container = document.getElementById('data-container');
+    container.innerHTML = ''; // Clear previous data
+
+    // Check if filteredData is empty
+    if (filteredData.length === 0) {
+        const noDataMessage = document.createElement('tr');
+        noDataMessage.innerHTML = `
+            <td colspan="8" class="text-center">No data exists for the given search criteria.</td>
+        `;
+        container.appendChild(noDataMessage);
+        return; // Exit the function since there are no results to display
+    }
+
+    filteredData.forEach(doc => {
+        const item = document.createElement('tr');
+        item.className = 'data-item';
+        item.innerHTML = `
+            <td>${doc.id}</td>
+            <td>${doc.Name}</td>
+            <td>${doc.Email}</td>
+            <td>${doc.PhoneNumber}</td>
+            <td>${doc.Role}</td>
+            <td>${doc.Organization}</td>
+            <td>${doc.isVerified}</td>
+            <td>
+                <button class="edit-btn btn btn-success btn-sm">Edit</button>
+                <button class="delete-btn btn btn-danger btn-sm">Delete</button>
+            </td>
+        `;
+        item.querySelector('.edit-btn').onclick = () => openEditModal(doc);
+        item.querySelector('.delete-btn').onclick = () => deleteItem(doc._id);
+
+        container.appendChild(item);
+    });
+}
+
+      function openEditModal(doc) {
+          document.getElementById('editId').value = doc._id;
+          document.getElementById('editName').value = doc.Name;
+          document.getElementById('editEmail').value = doc.Email;
+          document.getElementById('editPhoneNumber').value = doc.PhoneNumber;
+          document.getElementById('editRole').value = 'User';  // Fixed role
+          document.getElementById('editRoleHidden').value = 'User'; // Ensure it's set
+          document.getElementById('editOrganization').value = doc.Organization;
+
+          // Open the Bootstrap modal
+          $('#editModal').modal('show');
+      }
+
+      document.getElementById('saveEdit').addEventListener('click', async () => {
+          const id = document.getElementById('editId').value;
+          const updatedDetails = {
+              Name: document.getElementById('editName').value,
+              Email: document.getElementById('editEmail').value,
+              PhoneNumber: document.getElementById('editPhoneNumber').value,
+              Role: document.getElementById('editRole').value,
+              Organization: document.getElementById('editOrganization').value
+          };
+
+          try {
+              const response = await fetch('/admin/users/user/edit', {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ _id: id, updatedDetails })
+              });
+
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+              showToast('User updated successfully!', true);
+              $('#editModal').modal('hide');
+              fetchData(); // Refresh data after editing
+          } catch (error) {
+              console.error('Error updating user:', error);
+              showToast('Failed to update user.', false);
+          }
+      });
+
+      async function deleteItem(id) {
+          if (confirm(`Are you sure you want to delete user with ID: ${id}?`)) {
+              try {
+                  const response = await fetch('/admin/users/user/delete', {
+                      method: 'DELETE',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ _id: id })
+                  });
+
+                  if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                  showToast('User deleted successfully!', true);
+                  fetchData(); // Refresh data after deletion
+              } catch (error) {
+                  console.error('Error deleting user:', error);
+                  showToast('Failed to delete user.', false);
+              }
+          }
+      }
+
+      function showToast(message, isSuccess) {
+          const toastElement = document.createElement('div');
+          toastElement.className = `toast align-items-center text-white ${isSuccess ? 'bg-success' : 'bg-danger'} border-0`;
+          toastElement.role = 'alert';
+          toastElement.innerHTML = `
+              <div class="d-flex">
+                  <div class="toast-body">
+                      ${message}
+                  </div>
+                  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+          `;
+
+          // Append the toast to the toast container
+          document.getElementById('toastContainer').appendChild(toastElement);
+
+          const toast = new bootstrap.Toast(toastElement);
+          toast.show();
+
+          // Remove the toast after it's hidden to avoid cluttering the DOM
+          toastElement.addEventListener('hidden.bs.toast', () => {
+              toastElement.remove();
+          });
+      }
+  });
+</script>
+
+      
                     <!--//Page content End//-->
             <!--//Page-footer//-->
  <footer class="pb-3 pb-lg-5 px-3 px-lg-6">

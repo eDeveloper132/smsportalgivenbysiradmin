@@ -621,217 +621,289 @@ chat
           </div>
       </div>
       <!--//Page Toolbar End//-->
-      
-      <!-- Toast Container -->
-      <div aria-live="polite" aria-atomic="true" class="position-relative">
-          <div class="toast-container position-fixed top-0 end-0 p-3">
-              <div id="toastMessage" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                  <div class="d-flex">
-                      <div class="toast-body">
-                          <!-- Toast Message will appear here -->
+
+    <!-- Page Content -->
+    <div class="content pt-3 px-3 px-lg-6 d-flex flex-column-fluid">
+      <div class="container-fluid px-0">
+          <!-- Toast Container -->
+          <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"></div>
+    
+          <div>
+              <div class="row">
+                  <div class="col-12 mb-3 mb-lg-5">
+                      <div class="card">
+                          <!-- Search Input -->
+                          <div class="card-header">
+                              <input type="text" id="searchInput" placeholder="Search by name or email" class="form-control" onkeyup="searchData()">
+                          </div>
+                          <div class="table-responsive">
+                              <table id="datatable" class="table mt-0 table-striped table-card table-nowrap">
+                                  <thead class="text-uppercase small text-muted">
+                                      <tr>
+                                          <th>User ID</th>
+                                          <th>Name</th>
+                                          <th>Email</th>
+                                          <th>Phone Number</th>
+                                          <th>isVerified</th>
+                                          <th>Role</th>
+                                          <th>Action</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="data-container"></tbody>
+                              </table>
+                          </div>
+                          <!-- Pagination Controls -->
+                          <nav aria-label="Page navigation">
+                              <ul class="pagination justify-content-center" id="pagination">
+                                  <li class="page-item" id="prevPage"><a class="page-link" href="#">Previous</a></li>
+                                  <li class="page-item" id="nextPage"><a class="page-link" href="#">Next</a></li>
+                              </ul>
+                          </nav>
                       </div>
-                      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                   </div>
               </div>
           </div>
       </div>
-      
-      <!-- Page Content -->
-      <div class="content pt-3 px-3 px-lg-6 d-flex flex-column-fluid">
-          <div class="container-fluid px-0">
-              <div>
-                  <div class="row">
-                      <div class="col-12 mb-3 mb-lg-5">
-                          <div class="card">
-                              <div class="table-responsive">
-                                  <table id="datatable" class="table mt-0 table-striped table-card table-nowrap">
-                                      <thead class="text-uppercase small text-muted">
-                                          <tr>
-                                              <th>User ID</th>
-                                              <th>Name</th>
-                                              <th>Email</th>
-                                              <th>Phone Number</th>
-                                              <th>isVerified</th>
-                                              <th>Role</th>
-                                              <th>Action</th>
-                                          </tr>
-                                      </thead>
-                                      <tbody id="data-container"></tbody>
-                                  </table>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
+    </div>
+    
+    <!-- Modal for Editing -->
+    <div id="editModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="editModalLabel">Edit Item</h5>
               </div>
-      
-              <!-- Modal for Editing -->
-              <div id="editModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                      <div class="modal-content">
-                          <div class="modal-header">
-                              <h5 class="modal-title" id="editModalLabel">Edit Item</h5>
-                          </div>
-                          <div class="modal-body">
-                              <form id="editForm">
-                                  <input type="hidden" id="editId">
-                                  <div class="form-group">
-                                      <label for="editName">Name:</label>
-                                      <input type="text" class="form-control" id="editName" name="Name" required>
-                                  </div>
-                                  <div class="form-group">
-                                      <label for="editEmail">Email:</label>
-                                      <input type="email" class="form-control" id="editEmail" name="Email" required>
-                                  </div>
-                                  <div class="form-group">
-                                      <input type="hidden" class="form-control" id="editPassword" name="Password">
-                                  </div>
-                                  <div class="form-group">
-                                      <label for="editPhoneNumber">Phone Number:</label>
-                                      <input type="text" class="form-control" id="editPhoneNumber" name="PhoneNumber" required>
-                                  </div>
-                                  <input type="hidden" id="editRole" name="Role" value="Admin">
-                              </form>
-                          </div>
-                          <div class="modal-footer">
-                              <button type="button" class="btn btn-primary" id="saveEdit">Save</button>
-                          </div>
+              <div class="modal-body">
+                  <form id="editForm">
+                      <input type="hidden" id="editId">
+                      <div class="form-group">
+                          <label for="editName">Name:</label>
+                          <input type="text" class="form-control" id="editName" name="Name" required>
                       </div>
-                  </div>
+                      <div class="form-group">
+                          <label for="editEmail">Email:</label>
+                          <input type="email" class="form-control" id="editEmail" name="Email" required>
+                      </div>
+                      <div class="form-group">
+                          <input type="hidden" class="form-control" id="editPassword" name="Password">
+                      </div>
+                      <div class="form-group">
+                          <label for="editPhoneNumber">Phone Number:</label>
+                          <input type="text" class="form-control" id="editPhoneNumber" name="PhoneNumber" required>
+                      </div>
+                      <input type="hidden" id="editRole" name="Role" value="Admin">
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" id="saveEdit">Save</button>
               </div>
           </div>
-      
-          <script>
-              document.addEventListener('DOMContentLoaded', async () => {
-                  try {
-                      const response = await fetch('/admin_one', {
-                          method: 'POST',
-                          headers: {
-                              'Content-Type': 'application/json'
-                          },
-                          body: JSON.stringify({})
-                      });
-      
-                      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      
-                      const data = await response.json();
-      
-                      if (data) {
-                          document.getElementById('userName').textContent = data.Name;
-                          document.getElementById('userFullName').textContent = data.Name;
-                          document.getElementById('userGreeting').textContent = data.Name;
-                      }
-                  } catch (error) {
-                      console.error('Error fetching user data:', error);
-                  }
+      </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+      const itemsPerPage = 5; // Number of items per page
+      let currentPage = 1;
+      let allData = []; // Store all fetched data
+    
+      document.addEventListener('DOMContentLoaded', async () => {
+          try {
+              const response = await fetch('/admin_one', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({})
               });
-      
-              // Fetch and display data
-              async function fetchData() {
-                  try {
-                      const response = await fetch('/admin/admins/data');
-                      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                      const data = await response.json();
-                      displayData(data);
-                  } catch (error) {
-                      showToast('Error fetching data', 'danger');
-                  }
+    
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    
+              const data = await response.json();
+    
+              if (data) {
+                  document.getElementById('userName').textContent = data.Name;
+                  document.getElementById('userFullName').textContent = data.Name;
+                  document.getElementById('userGreeting').textContent = data.Name;
+                  showToast('Admin data successfully loaded', true);
               }
-      
-              function displayData(data) {
-                  const container = document.getElementById('data-container');
-                  container.innerHTML = '';
-      
-                  data.documents.forEach(doc => {
-                      const item = document.createElement('tr');
-                      item.className = 'data-item';
-      
-                      item.innerHTML = `
-                          <td>${doc.id}</td>
-                          <td>${doc.Name}</td>
-                          <td>${doc.Email}</td>
-                          <td>${doc.PhoneNumber}</td>
-                          <td>${doc.isVerified}</td>
-                          <td>Admin</td>
-                          <td><button class="edit-btn btn btn-success btn-sm">Edit</button>
-                          <button class="delete-btn btn btn-danger btn-sm">Delete</button></td>
-                      `;
-      
-                      item.querySelector('.edit-btn').onclick = () => openEditModal(doc);
-                      item.querySelector('.delete-btn').onclick = () => deleteItem(doc._id);
-      
-                      container.appendChild(item);
+          } catch (error) {
+              showToast('Error fetching user data', false);
+          }
+    
+          // Fetch and display data when page loads
+          await fetchData();
+      });
+    
+      // Fetch and display data
+      async function fetchData() {
+          try {
+              const response = await fetch('/admin/admins/data');
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+              const data = await response.json();
+              allData = data.documents; // Store all data
+              displayData();
+              showToast('Data loaded successfully', true);
+          } catch (error) {
+              showToast('Error fetching data', false);
+          }
+      }
+    
+      function displayData() {
+          const container = document.getElementById('data-container');
+          container.innerHTML = '';
+    
+          // Pagination logic
+          const start = (currentPage - 1) * itemsPerPage;
+          const end = start + itemsPerPage;
+          const paginatedData = allData.slice(start, end);
+    
+          paginatedData.forEach(doc => {
+              const item = document.createElement('tr');
+              item.className = 'data-item';
+    
+              item.innerHTML = `
+                  <td>${doc.id}</td>
+                  <td>${doc.Name}</td>
+                  <td>${doc.Email}</td>
+                  <td>${doc.PhoneNumber}</td>
+                  <td>${doc.isVerified}</td>
+                  <td>Admin</td>
+                  <td>
+                      <button class="edit-btn btn btn-success btn-sm">Edit</button>
+                      <button class="delete-btn btn btn-danger btn-sm">Delete</button>
+                  </td>
+              `;
+    
+              item.querySelector('.edit-btn').onclick = () => openEditModal(doc);
+              item.querySelector('.delete-btn').onclick = () => deleteItem(doc._id);
+    
+              container.appendChild(item);
+          });
+    
+          updatePagination();
+      }
+    
+      function updatePagination() {
+          const totalPages = Math.ceil(allData.length / itemsPerPage);
+          const prevButton = document.getElementById('prevPage');
+          const nextButton = document.getElementById('nextPage');
+    
+          prevButton.style.visibility = currentPage === 1 ? 'hidden' : 'visible';
+          nextButton.style.visibility = currentPage === totalPages ? 'hidden' : 'visible';
+    
+          prevButton.onclick = () => {
+              if (currentPage > 1) {
+                  currentPage--;
+                  displayData();
+              }
+          };
+    
+          nextButton.onclick = () => {
+              if (currentPage < totalPages) {
+                  currentPage++;
+                  displayData();
+              }
+          };
+      }
+    
+      function searchData() {
+          const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+          allData = allData.filter(doc => 
+              doc.Name.toLowerCase().includes(searchTerm) || 
+              doc.Email.toLowerCase().includes(searchTerm)
+          );
+          currentPage = 1; // Reset to first page on search
+          displayData();
+      }
+    
+      function openEditModal(doc) {
+          document.getElementById('editId').value = doc._id;
+          document.getElementById('editName').value = doc.Name;
+          document.getElementById('editEmail').value = doc.Email;
+          document.getElementById('editPassword').value = doc.Password;
+          document.getElementById('editPhoneNumber').value = doc.PhoneNumber;
+          document.getElementById('editRole').value = 'Admin';
+    
+          $('#editModal').modal('show');
+      }
+    
+      document.getElementById('saveEdit').addEventListener('click', async () => {
+          const id = document.getElementById('editId').value;
+          const updatedDetails = {
+              Name: document.getElementById('editName').value,
+              Email: document.getElementById('editEmail').value,
+              Password: document.getElementById('editPassword').value,
+              PhoneNumber: document.getElementById('editPhoneNumber').value,
+              Role: 'Admin',
+          };
+    
+          try {
+              const response = await fetch('/admin/adminsedit', {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ _id: id, updatedDetails })
+              });
+    
+              if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+              showToast('Item updated successfully', true);
+              $('#editModal').modal('hide');
+              await fetchData(); // Fetch the updated data
+          } catch (error) {
+              showToast('Failed to update item', false);
+          }
+      });
+    
+      async function deleteItem(id) {
+          if (confirm(`Are you sure you want to delete item with ID: ${id}?`)) {
+              try {
+                  const response = await fetch('/admin/adminsdelete', {
+                      method: 'DELETE',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ _id: id })
                   });
+    
+                  if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                  showToast('Item deleted successfully', true);
+                  await fetchData(); // Fetch the updated data
+              } catch (error) {
+                  showToast('Failed to delete item', false);
               }
-      
-              function openEditModal(doc) {
-                  document.getElementById('editId').value = doc._id;
-                  document.getElementById('editName').value = doc.Name;
-                  document.getElementById('editEmail').value = doc.Email;
-                  document.getElementById('editPassword').value = doc.Password;
-                  document.getElementById('editPhoneNumber').value = doc.PhoneNumber;
-                  document.getElementById('editRole').value = 'Admin';
-      
-                  $('#editModal').modal('show');
-              }
-      
-              document.getElementById('saveEdit').addEventListener('click', async () => {
-                  const id = document.getElementById('editId').value;
-                  const updatedDetails = {
-                      Name: document.getElementById('editName').value,
-                      Email: document.getElementById('editEmail').value,
-                      Password: document.getElementById('editPassword').value,
-                      PhoneNumber: document.getElementById('editPhoneNumber').value,
-                      Role: 'Admin',
-                  };
-      
-                  try {
-                      const response = await fetch('/admin/adminsedit', {
-                          method: 'PUT',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ _id: id, updatedDetails })
-                      });
-      
-                      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                      showToast('Item updated successfully', 'success');
-                      $('#editModal').modal('hide');
-                      fetchData();
-                  } catch (error) {
-                      showToast('Failed to update item', 'danger');
-                  }
-              });
-      
-              async function deleteItem(id) {
-                  if (confirm(`Are you sure you want to delete item with ID: ${id}?`)) {
-                      try {
-                          const response = await fetch('/admin/adminsdelete', {
-                              method: 'DELETE',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ _id: id })
-                          });
-      
-                          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                          showToast('Item deleted successfully', 'success');
-                          fetchData();
-                      } catch (error) {
-                          showToast('Failed to delete item', 'danger');
-                      }
-                  }
-              }
-      
-              // Function to show toast notifications
-              function showToast(message, type) {
-                  const toastElement = document.getElementById('toastMessage');
-                  toastElement.querySelector('.toast-body').textContent = message;
-                  toastElement.className = `toast align-items-center text-bg-${type} border-0`;
-      
-                  const toast = new bootstrap.Toast(toastElement);
-                  toast.show();
-              }
-      
-              // Fetch data when the page loads
-              window.onload = fetchData;
-          </script>
-      </div>
+          }
+      }
+    
+      // Function to show toast notifications
+      function showToast(message, isSuccess) {
+          const toastElement = document.createElement('div');
+          toastElement.className = `toast align-items-center text-white ${isSuccess ? 'bg-success' : 'bg-danger'} border-0`;
+          toastElement.role = 'alert';
+          toastElement.innerHTML = `
+              <div class="d-flex">
+                  <div class="toast-body">
+                      ${message}
+                  </div>
+                  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+          `;
+    
+          // Append the toast to the toast container
+          document.getElementById('toastContainer').appendChild(toastElement);
+    
+          const toast = new bootstrap.Toast(toastElement);
+          toast.show();
+    
+          // Remove the toast after it's hidden to avoid cluttering the DOM
+          toastElement.addEventListener('hidden.bs.toast', () => {
+              toastElement.remove();
+          });
+      }
+    
+      // Fetch data when the page loads
+      window.onload = fetchData;
+    </script>
+    
+
+
       
                     <!--//Page content End//-->
             <!--//Page-footer//-->
