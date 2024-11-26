@@ -727,10 +727,10 @@ chat
                   document.getElementById('userName').textContent = data.Name;
                   document.getElementById('userFullName').textContent = data.Name;
                   document.getElementById('userGreeting').textContent = data.Name;
-                  showToast('Admin data successfully loaded', true);
+                  // showToast('Admin data successfully loaded', true);
               }
           } catch (error) {
-              showToast('Error fetching user data', false);
+              // showToast('Error fetching user data', false);
           }
     
           // Fetch and display data when page loads
@@ -745,9 +745,9 @@ chat
               const data = await response.json();
               allData = data.documents; // Store all data
               displayData();
-              showToast('Data loaded successfully', true);
+              // showToast('Data loaded successfully', true);
           } catch (error) {
-              showToast('Error fetching data', false);
+              // showToast('Error fetching data', false);
           }
       }
     

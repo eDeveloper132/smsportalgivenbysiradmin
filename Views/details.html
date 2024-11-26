@@ -791,11 +791,11 @@ chat
                   document.getElementById('userName').textContent = data.Name;
                   document.getElementById('userFullName').textContent = data.Name;
                   document.getElementById('userGreeting').textContent = data.Name;
-                  showToast('User data fetched successfully!', true);
+                //   showToast('User data fetched successfully!', true);
               }
           } catch (error) {
               console.error('Error fetching user data:', error);
-              showToast('Failed to fetch user data.', false);
+            //   showToast('Failed to fetch user data.', false);
           }
       }
 
@@ -807,11 +807,11 @@ chat
               const data = await response.json();
               usersData = data.documents; // Store fetched data
               displayData(currentPage);
-              showToast('Data loaded successfully!', true);
+            //   showToast('Data loaded successfully!', true);
               setupPagination(usersData.length);
           } catch (error) {
               console.error('Error fetching data:', error);
-              showToast('Failed to fetch data.', false);
+            //   showToast('Failed to fetch data.', false);
           }
       }
 

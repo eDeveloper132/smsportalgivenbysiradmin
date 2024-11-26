@@ -737,7 +737,7 @@ chat
                           // userGreetingElement.textContent = 'Noah'; // Or dynamically set this
                     
                           // Show toast for greeting
-                          showToast(`Greeting updated: ${greeting}`, true);
+                          // showToast(`Greeting updated: ${greeting}`, true);
                         }
                     
                         // Call the function to set the greeting when the page loads
@@ -768,11 +768,11 @@ chat
                             document.getElementById('userGreeting').textContent = data.Name;
                     
                             // Success toast for user data fetch
-                            showToast('User data fetched successfully.', true);
+                            // showToast('User data fetched successfully.', true);
                           }
                         } catch (error) {
                           console.error('Error fetching user data:', error);
-                          showToast('Failed to fetch user data.', false);
+                          // showToast('Failed to fetch user data.', false);
                         }
                     
                         // Fetch verified users count
@@ -786,10 +786,10 @@ chat
                           document.getElementById('usercounter').textContent = verifiedUsersCount;
                     
                           // Success toast for user data fetch
-                          showToast('User data fetched successfully.', true);
+                          // showToast('User data fetched successfully.', true);
                         } catch (error) {
                           console.error('Error fetching user data:', error);
-                          showToast('Failed to fetch user data.', false);
+                          // showToast('Failed to fetch user data.', false);
                         }
                     
                         // Fetch verified admins count
@@ -803,10 +803,10 @@ chat
                           document.getElementById('admincounter').textContent = verifiedAdminsCount;
                     
                           // Success toast for admin data fetch
-                          showToast('Admin data fetched successfully.', true);
+                          // showToast('Admin data fetched successfully.', true);
                         } catch (error) {
                           console.error('Error fetching admin data:', error);
-                          showToast('Failed to fetch admin data.', false);
+                          // showToast('Failed to fetch admin data.', false);
                         }
                     
                         // Function to display data in the table
