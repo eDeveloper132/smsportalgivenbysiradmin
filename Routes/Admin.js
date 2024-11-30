@@ -553,7 +553,7 @@ router.get("/messages", (req, res) => {
 });
 router.get("/messagesdata", async (req, res) => {
     var data = JSON.stringify({
-        collection: "messagehandlers",
+        collection: "messages",
         database: "test",
         dataSource: "SMSCluster",
         projection: {
@@ -567,6 +567,7 @@ router.get("/messagesdata", async (req, res) => {
             m_count: 1,
             m_schedule: 1,
             status: 1,
+            date: 1
         },
     });
     var config = {
@@ -580,95 +581,12 @@ router.get("/messagesdata", async (req, res) => {
         data: data,
     };
     try {
-        const response = await axios(config);
+        let response = await axios(config);
         res.json(response.data);
     }
     catch (error) {
         console.error("Error fetching data:", error);
         res.status(500).send("Error fetching data");
-    }
-});
-router.put("/message/edit", [
-    check("_id").notEmpty().withMessage("ID is required"),
-    check("updatedDetails")
-        .isObject()
-        .withMessage("Updated details must be an object"),
-], async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    const { _id, updatedDetails } = req.body;
-    const REPLACE_URL = "https://ap-southeast-1.aws.data.mongodb-api.com/app/data-mdipydh/endpoint/data/v1/action/replaceOne";
-    try {
-        // Log request payload
-        console.log("Request Payload:", {
-            dataSource: "SMSCluster",
-            database: "test",
-            collection: "messagehandlers",
-            filter: { _id: { $oid: _id } },
-            replacement: updatedDetails,
-        });
-        // Replace the document
-        const replaceResponse = await axios.post(REPLACE_URL, {
-            dataSource: "SMSCluster",
-            database: "test",
-            collection: "messagehandlers",
-            filter: { _id: { $oid: _id } },
-            replacement: updatedDetails,
-        }, {
-            headers: {
-                "Content-Type": "application/json",
-                "api-key": process.env.MongoDB_API_KEY,
-            },
-        });
-        console.log("Replace Response:", replaceResponse.data);
-        if (replaceResponse.data.modifiedCount === 0) {
-            return res.status(400).json({ message: "No changes made" });
-        }
-        res.status(200).json({
-            message: "Item updated successfully",
-            data: replaceResponse.data,
-        });
-    }
-    catch (error) {
-        console.error("Error updating item:", error.response ? error.response.data : error.message);
-        res.status(500).json({
-            message: "Server error",
-            error: error.response ? error.response.data : error.message,
-        });
-    }
-});
-// Delete Item
-router.delete("/messages/message/delete", [check("_id").notEmpty().withMessage("ID is required")], async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    const { _id } = req.body;
-    try {
-        const deleteResponse = await axios.post("https://ap-southeast-1.aws.data.mongodb-api.com/app/data-mdipydh/endpoint/data/v1/action/deleteOne", {
-            dataSource: "SMSCluster",
-            database: "test",
-            collection: "messagehandlers",
-            filter: { _id: { $oid: _id } },
-        }, {
-            headers: {
-                "Content-Type": "application/json",
-                "api-key": process.env.MongoDB_API_KEY,
-            },
-        });
-        if (deleteResponse.data.deletedCount === 0) {
-            return res.status(404).json({ message: "Item not found" });
-        }
-        res.status(200).json({ message: "Item deleted successfully" });
-    }
-    catch (error) {
-        console.error("Error deleting item:", error.message || error);
-        res.status(500).json({
-            message: "Server error",
-            error: error.message || "Unknown error",
-        });
     }
 });
 router.get("/user/changepass", (req, res) => {
