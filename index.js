@@ -378,7 +378,13 @@ app.post("/recoverpass", async (req, res) => {
 app.get("/verify-email", async (req, res) => {
     const { token } = req.query;
     if (!token) {
-        return res.status(400).send("Verification token is required.");
+        return res.status(400).send(`
+      <html>
+        <body>
+          <h1>Verification token is required.</h1>
+        </body>
+      </html>
+    `);
     }
     // Clear the io array if it contains 1 or 2 items
     if (io.length > 0) {
@@ -409,7 +415,13 @@ app.get("/verify-email", async (req, res) => {
         // Find the user with the provided verification token
         const user = await findUserByVerificationToken(token);
         if (!user) {
-            return res.status(400).send("Invalid or expired token.");
+            return res.status(400).send(`
+        <html>
+          <body>
+            <h1>Invalid or expired token.</h1>
+          </body>
+        </html>
+      `);
         }
         const id = user._id; // Extract the ObjectId string
         console.log(id);
@@ -422,7 +434,17 @@ app.get("/verify-email", async (req, res) => {
         if (updated.matchedCount === 0) {
             return res.status(400).send("Failed to update user. Please try again.");
         }
-        res.send("Email verified successfully!");
+        res.send(`
+      <html>
+        <head>
+          <meta http-equiv="refresh" content="3;url=https://smsportalgivenbysiradmin.vercel.app" />
+        </head>
+        <body>
+          <h1>Email verified successfully!</h1>
+          <p>You will be redirected shortly...</p>
+        </body>
+      </html>
+    `);
     }
     catch (error) {
         console.error("Error verifying email:", error);
